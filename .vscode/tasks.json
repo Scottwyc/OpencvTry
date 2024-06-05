@@ -1,0 +1,62 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc.exe build active file",
+            "command": "D:/c/bin/gcc.exe ",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                // "-std=c++17"
+
+            ],
+            "options": {
+                "cwd": "D:/c/bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "compiler: D:/c/bin/gcc.exe"
+        },
+        {
+            "type": "shell",
+            "label": "compile C++",
+            "command": "D:/c/bin/g++",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "-std=c++17"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "compiler: D:/c/bin/g++.exe"
+        },
+
+        {
+            "type": "shell",
+            "label": "compile opencv C++",
+            // set c++17 standard in the command
+            "command": "D:/c/bin/g++ -g -std=c++17 ${file} -lstdc++fs -lopencv_core452 -lopencv_imgcodecs452 -lopencv_imgproc452 -lopencv_calib3d452 -lopencv_dnn452 -lopencv_features2d452 -lopencv_flann452 -lopencv_gapi452 -lopencv_highgui452 -lopencv_ml452 -lopencv_objdetect452 -lopencv_photo452 -lopencv_stitching452 -lopencv_video452 -lopencv_videoio452 -o ${fileBasenameNoExtension}.exe",
+            "args": [
+                
+            ],
+
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "compiler: D:/c/bin/g++.exe"
+        },
+
+    ],
+
+    "version": "2.0.0"
+}

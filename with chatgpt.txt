@@ -1,0 +1,341 @@
+# copilopt_Bing_AI
+
+#ASK1
+I have one basic Image: Mat Img, then make Mat Phi:
+Mat Phi = cv::Mat::ones(Img.size(),CV_32F); // just white
+            int margin = 10;  // margin of Phi
+            cv::Rect PhiInner(margin,margin,Img.size().width-2*margin, Img.size().height-2*margin); // choose inner ROI
+            Phi(PhiInner) = -1*Phi(PhiInner); 
+And I want to show Phi on Img, please show me the way 
+#ANSWER
+
+/ Convert Phi to 8-bit for visualization
+    cv::Mat PhiVis;
+    Phi.convertTo(PhiVis, CV_8U, 255);
+
+    // Overlay Phi on the original image
+    cv::Mat result;
+    cv::addWeighted(Img, 1.0, PhiVis, 0.5, 0, result);
+
+    // Display the result
+    cv::imshow("Phi on Img", result);
+    cv::waitKey(0);
+
+# ASK2
+here I have Mat Img, which has 3 channels, I need to transform into 1 channel
+
+Actually I want to ectract 1 channel of it and store the 1 channel of the Img.
+# ANSWER
+// Split the image into individual channels
+    std::vector<cv::Mat> channels;
+    cv::split(Img, channels);
+
+    // Extract the desired channel (e.g., green channel)
+    cv::Mat channel = channels[1]; // 0 for blue, 1 for green, 2 for red
+
+# ASK3.1
+Here I have 1 channel Mat Img,
+It seems that cv::imwrite("mikasa1_onechannel.png", Img) will automatically store a 3 channel picture, but I want to store the 1 channel Img, please show me the way
+
+# ANS
+// Load the single-channel image
+    cv::Mat Img = cv::imread("path_to_image.jpg", cv::IMREAD_GRAYSCALE);
+
+specify the cv::IMREAD_GRAYSCALE flag to read the image as a grayscale image.
+
+# ASK3.2
+actually I already have the 1 channel Mat Img, but I want to save it into 1 channel png, please show me the way
+
+# ANS
+// Save the single-channel image as a 1-channel PNG
+    cv::imwrite("mikasa1_onechannel.png", Img, {cv::IMWRITE_PNG_COMPRESSION, 0});
+
+cv::IMWRITE_PNG_COMPRESSION flag with a value of 0 disables compression to ensure a lossless output.  ?? not I want
+
+# ASK3.3
+is it always the case that cv::imread automatically make a 3 channel Mat?
+
+# ANS
+can specify additional flags to control how the image is loaded.
+the cv::IMREAD_GRAYSCALE flag is used to read the image as a single-channel grayscale image.
+
+You can also use the cv::IMREAD_UNCHANGED flag to maintain the original number of channels in the image. For example
+
+cv::Mat img = cv::imread("path_to_image.png", cv::IMREAD_UNCHANGED);
+// this is useful!!
+
+# Q4.1
+I want to get the type of Mat Img, and use cout to print.
+But actually I get "0" as the type, it should be wrong
+# A4
+It is correct 0 !
+	C1	C2	C3	C4	C(5)	C(6)  C(7)C(8)	
+CV_8U	0	8	16	24	32	40    48	56
+CV_8S	1	9	17	25	33	41    49	57
+CV_16U	2	10	18	26	34	42     50	58
+CV_16S	3	11	19	27	35	43     51	59
+CV_32S	4	12	20	28	36	44     52	60
+CV_32F	5	13	21	29	37	45    53	61
+CV_64F	6	14	22	30	38	46     54	62
+
+CV_32FC3  : 3 channel
+CV_8S ： 1 channel 8 bit signed char
+so 0 for CV_8U 8 bit unsigned char: 0~255 !!  the type of pixel:uchr
+Vec3b就是uchar的数组，长度为3
+
+Mat_<uchar>---------CV_8U
+ 
+Mat<char>-----------CV_8S
+ 
+Nat_<short>---------CV_16S
+ 
+Mat_<ushort>--------CV_16U
+ 
+Mat_<int>-----------CV_32S
+ 
+Mat_<float>----------CV_32F
+ 
+Mat_<double>--------CV_64F
+
+type	C1	C2	C3	C4	 C6
+uchar	uchar	cv::Vec2b	cv::Vec3b	cv::Vec4b	
+short	short	cv::Vec2s	cv::Vec3s	cv::Vec4b	
+int	int	cv::Vec2i	cv::Vec3i	cv::Vec4i	
+float	float	cv::Vec2f	cv::Vec3f	cv::Vec4f	cv::Vec6f
+double	double	cv::Vec2d	cv::Vec3d	cv::Vec4d	cv::Vec6f
+refer to：https://blog.csdn.net/weixin_35695879/article/details/85948011
+
+数值	具体类型	取值范围
+CV_8U	8 位无符号整数	（0……255）
+CV_8S	8 位符号整数	（-128……127）
+CV_16U	16 位无符号整数	（0……65535）
+CV_16S	16 位符号整数	（-32768……32767）
+CV_32S	32 位符号整数	（-2147483648……2147483647）
+CV_32F	32 位浮点数	（-FLT_MAX ………FLT_MAX，INF，NAN)
+CV_64F	64 位浮点数	（-DBL_MAX ……….DBL_MAX，INF，NAN)
+
+refer to：https://blog.csdn.net/weixin_35695879/article/details/85948011
+
+# Q4.2
+in opencv C++, I want to automatically set the correct typename according to the type of Mat, when use Mat_at<typename>(), for instance, Mat_at<uchar>() for CV_8U Mat. Please show me a general method.
+
+# A4.2
+template<typename T>
+T accessPixel(const cv::Mat& img, int row, int col) {
+    return img.at<T>(row, col);
+}
+// just give a temp typename
+
+# Q4.3 
+No, the template<typename T> is not what I want. I mean, for different type of Mat, I can use a uniform function to use Mat_at<>() 
+# A4.3
+use overloaded function!!
+
+// Function for accessing pixel values of CV_8U Mat
+float Mat_at(const cv::Mat& img, int row, int col) {
+    return img.at<uchar>(row, col);
+}
+
+// Function for accessing pixel values of CV_32F Mat
+float Mat_at(const cv::Mat& img, int row, int col) {
+    return img.at<float>(row, col);
+}
+
+    // Access pixel values using the uniform function
+    uchar pixel8U = Mat_at(img, 0, 0);
+    float pixel32F = Mat_at(img, 0, 0);
+
+// then same Mat_at() for different type!!
+I can make a hpp for it matAt
+
+Note: should have uniform return type for overloaded function!!
+
+Actually, just separate different situation in hpp, no need for overloaded function!
+
+
+# Q5.1
+for CV_8U, what is  the num of white and black?
+
+# A5.1
+he value range is from 0 to 255. In a grayscale image, a value of 0 represents black, and a value of 255 represents white.
+
+# Q5.2
+for CV_8U, -1 represents what color?
+# A5.2
+For a CV_8U type, which represents an 8-bit unsigned integer, the value -1 is outside the valid range of 0 to 255. In OpenCV, when working with an 8-bit unsigned integer type, a value of -1 is typically interpreted as white or the maximum value (255).
+However, it's important to note that the value -1 is not a valid pixel intensity in a CV_8U image. By default, the CV_8U type does not allow negative values, and attempting to assign -1 to a CV_8U pixel will result in an overflow and wraparound behavior. The resulting pixel value will depend on the specific implementation and may not be consistent across different systems or versions of OpenCV.
+
+like CV_32S (32 bit signed ) can be use for it.
+
+# Q5.3
+I want to set the type as CV_8S when imread
+# A5.3
+ OpenCV does not have a direct option to read an image with the CV_8S (8-bit signed integer) type using the cv::imread() function. The cv::imread() function is primarily designed to read images in formats that are compatible with the standard 8-bit unsigned integer (CV_8U) or 16-bit unsigned integer (CV_16U) pixel types.
+
+However, you can still achieve a similar effect by reading the image as CV_8U and then converting it to CV_8S using the cv::convertScaleAbs() function.
+
+// Convert the image to 8-bit signed integer (CV_8S)
+    cv::Mat img_8s;
+    cv::convertScaleAbs(img, img_8s, 1.0, -128);
+
+// then transform from 0~255 to -128~127
+
+
+# Q6
+float a = epsilon/( x*x+ epsilon^2); 
+It raises error:
+expression must have integral or unscoped enum type, why?
+# A6
+In C++, the ^ operator is not used for exponentiation;
+
+# Q7
+I need to convert the Mat Img into CV_32F
+# A7
+// Convert the image to CV_32F
+    cv::Mat img_32f;
+    img.convertTo(img_32f, CV_32F);
+
+# Q8
+I need to transform Mat Img into vector<float> Img_v 
+# A8
+ // Reshape the image to a single row
+    cv::Mat img_reshaped = img.reshape(1, 1);
+
+    // Convert the image to CV_32F
+    cv::Mat img_32f;
+    img_reshaped.convertTo(img_32f, CV_32F);
+
+    // Create a vector<float> from the converted image
+    std::vector<float> img_v(img_32f.ptr<float>(), img_32f.ptr<float>() + img_32f.cols * img_32f.rows * img_32f.channels());
+
+# Q9
+I need to fulfill the function like "np.gradient" in python, using C++, can you calculate gradient of Mat?
+# A9
+In C++, you can calculate the gradient of a cv::Mat image using the cv::Sobel function from the OpenCV library
+
+    // Calculate the gradient in the x and y directions
+    cv::Mat gradientX, gradientY;
+    cv::Sobel(img, gradientX, CV_32F, 1, 0); //X order
+    cv::Sobel(img, gradientY, CV_32F, 0, 1); // Y order
+
+    // Access the gradient values
+    for (int i = 0; i < img.rows; i++) {
+        for (int j = 0; j < img.cols; j++) {
+            float gx = gradientX.at<float>(i, j);
+            float gy = gradientY.at<float>(i, j);
+
+            // Do something with gx and gy (gradient values)
+        }
+    }
+
+# Q10.1
+I need to get ROI as a rectangle in the Mat Img, and the margins are set
+# A10
+    // Set the margins for the ROI
+    int leftMargin = 100;   // Left margin
+    int topMargin = 150;    // Top margin
+    int width = 300;        // Width of the ROI
+    int height = 200;       // Height of the ROI
+
+    // Define the ROI rectangle
+    cv::Rect roiRect(leftMargin, topMargin, width, height);
+
+    // Extract the ROI from the image
+    cv::Mat roiImg = img(roiRect);
+
+// and I make it use margin:
+cv::Rect roiRect(leftMargin, topMargin, Img.Size().width-2*leftMargin,  Img.Size().height-2*topMargin);
+
+# Q10.2
+I need to set a rect on original Mat Img, the the edge of the rect is 0, please to show me the way
+
+# A10.2
+// Create a black mask image with the same size as the original image
+    cv::Mat mask = cv::Mat::zeros(img.size(), img.type()); // zero: black
+
+    // Set the region inside the rectangle to 255 (white)
+    cv::rectangle(mask, cv::Rect(x, y, width, height), cv::Scalar(255), -1);
+// -1 flag for filling the rectangle
+
+Maybe I just need to use two times of rectangle to create the Phi with outside 
+
+But I need get Phi on the whole Img, so maybe use Rec twice
+
+
+
+# CSDN
+C++版本
+
+GCC版本支持情况
+
+GCC版本
+
+指定版本的命令标志
+
+C++98
+
+完全支持
+
+从GCC6.1之前版本的默认模式
+
+-std=c++98 or std=gnn++98
+
+C++11
+
+完全支持
+
+从GCC4.8.1版本完全支持
+
+-std=c++11 or std=gnu++11
+
+C++14
+
+完全支持
+
+从GCC6.1版本开始完全支持，从6.1-10(包括)的默认模式
+
+-std=c++14 or std=gnu++14
+
+C++17
+
+完全支持
+
+从GCC 5版本开始支持，到GCC 7版本已完全支持，是GCC 11到13版本的默认模式
+
+-std=c++17 or std=gnu++17
+
+C++20
+
+未完全支持
+
+从GCC 8版本开始支持
+
+-std=c++20 or
+
+std=gnu++20（GCC 9以及之前版本使用-std=c++2a）
+
+C++23
+
+未完全支持（标准开发中）
+
+从GCC 11版本开始支持
+
+-std=c++2b or
+
+std=gnu++2b
+
+                        
+原文链接：https://blog.csdn.net/qq_39974998/article/details/130396600
+
+
+
+
+
+
+
+
+
+
+
+
+

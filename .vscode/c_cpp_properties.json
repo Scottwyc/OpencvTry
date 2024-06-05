@@ -1,0 +1,57 @@
+{
+    "configurations": [
+        {
+            "name": "Win64_Cpp",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${default}",
+                "D:/c/include/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "D:/c/bin/g++.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64"
+        },
+        {
+            "name": "Win64_C",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "D:/c/include/**",
+                "${default}"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "D:/c/bin/gcc.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64"
+        },
+        {
+            "name": "x64-mingw-dynamic",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${default}",
+                "C:/src_C_C++/vcpkg-master/installed/x64-mingw-dynamic/include/**",
+                "D:/c/include/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "D:/c/bin/gcc.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ],
+    "version": 4
+}
