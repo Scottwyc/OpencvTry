@@ -121,10 +121,15 @@ class MyRSF{
             // return delta;
             return 0;
         }
+
 };
 
 
 void testMyRSF(){
+
+}
+
+void test2(){
 
 }
 
@@ -134,6 +139,7 @@ void test(){
 
 int main(){
     testMyRSF();
+    test2();
     test( );
 
     return 0;
