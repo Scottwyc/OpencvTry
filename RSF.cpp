@@ -129,7 +129,12 @@ class MyRSF{
 };
 
 
+void testMyRSF(){
+
+}
+
 int main(){
+    testMyRSF();
 
     return 0;
 }
