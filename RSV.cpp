@@ -116,8 +116,8 @@ class MyRSF{
                     denominator += Heaviside(phi_local);
                 }
             }
-            float delta = abs(C1-numerator/denominator) ;
-            C1 = numerator/denominator ; 
+            // float delta = abs(C1-numerator/denominator) ;
+            // C1 = numerator/denominator ; 
             return delta;
         }
 
